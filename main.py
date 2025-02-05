@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from llama_cpp import Llama
+from llama_cpp import Llama  
 
 app = FastAPI()
 
@@ -10,15 +10,16 @@ modelGGUF = Llama(
     model_path=gguf_model_path,
     rope_scaling={"type": "linear", "factor": 2.0},
     chat_format=None,  # Disables any chat formatting
+    n_ctx=32768,
 )
 
 # Define the commit message prompt
-commit_prompt = """Generate a concise and meaningful commit message based on the provided Git diff.
+commit_prompt = """Generate a meaningful commit message explaining the provided Git diff.
 
 ### Git Diff:
 {}
 
-### Commit Message:"""
+### Commit Message:""" 
 
 # Request model
 class GitDiffRequest(BaseModel):
