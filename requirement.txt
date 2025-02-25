@@ -11,3 +11,4 @@ google-auth-httplib2
 google-auth-transport-requests
 pydantic
 requests
+google-api-python-client
