@@ -11,10 +11,10 @@ from google.auth.transport.requests import AuthorizedSession
 
 # Load environment variables
 load_dotenv('.env')
-LLAMA_URL = os.getenv('LLAMA_URL')
-LLAMA_KEY = os.getenv('LLAMA_KEY')
-SERVICE_ACCOUNT_KEY_FILE=os.getenv('SERVICE_ACCOUNT_KEY_FILE')
-ENDPOINT_URL=os.getenv('ENDPOINT_URL')
+LLAMA_URL = os.environ.get('LLAMA_URL')
+LLAMA_KEY = os.environ.get('LLAMA_KEY')
+SERVICE_ACCOUNT_KEY_FILE=os.environ.get('SERVICE_ACCOUNT_KEY_FILE')
+ENDPOINT_URL=os.environ.get('ENDPOINT_URL')
 
 
 # FastAPI app initialization
