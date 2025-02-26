@@ -64,7 +64,18 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
+      - name: Set Environment Variables
+        run: |
+          echo "LLAMA_URL=${{ secrets.LLAMA_URL }}" >> $GITHUB_ENV
+          echo "LLAMA_KEY=${{ secrets.LLAMA_KEY }}" >> $GITHUB_ENV
+          echo "ENDPOINT_URL=${{ secrets.ENDPOINT_URL }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY_FILE=service_account.json" >> $GITHUB_ENV
+
+      - name: Save JSON Secret to File
+        run: |
+          echo "${{ secrets.SERVICE_ACCOUNT_KEY_FILE }}" > service_account.json
+          chmod 600 service_account.json
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -78,4 +89,3 @@ jobs:
         with:
           app-name: 'GitCommitAI-Backend'
           slot-name: 'Production'
-          
