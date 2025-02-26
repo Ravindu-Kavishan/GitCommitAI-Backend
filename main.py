@@ -20,15 +20,6 @@ ENDPOINT_URL = os.environ.get('ENDPOINT_URL')
 # FastAPI app initialization
 app = FastAPI()
 
-# Enable CORS (Adjust allowed origins for security)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Change this to specific frontend origin if needed
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 class CommitMessageHandler:
     def __init__(self, faiss_index_file="faiss_rules.index", rules_file="rules.txt"):
         # Initialize the OpenAI client and the Sentence Transformer model
