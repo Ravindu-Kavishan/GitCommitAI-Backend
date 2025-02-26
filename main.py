@@ -152,6 +152,11 @@ class GitDiffRequest(BaseModel):
     message_type: str  # 'singleline' or 'multiline'
 
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello World"}
+
+
 @app.post("/generate-commit-message/")
 async def generate_commit_message_endpoint(request: GitDiffRequest):
     try:
