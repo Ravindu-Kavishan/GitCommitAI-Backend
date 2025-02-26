@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 import faiss
@@ -13,15 +14,22 @@ from google.auth.transport.requests import AuthorizedSession
 load_dotenv('.env')
 LLAMA_URL = os.environ.get('LLAMA_URL')
 LLAMA_KEY = os.environ.get('LLAMA_KEY')
-SERVICE_ACCOUNT_KEY_FILE=os.environ.get('SERVICE_ACCOUNT_KEY_FILE')
-ENDPOINT_URL=os.environ.get('ENDPOINT_URL')
-
+SERVICE_ACCOUNT_KEY_FILE = os.environ.get('SERVICE_ACCOUNT_KEY_FILE')
+ENDPOINT_URL = os.environ.get('ENDPOINT_URL')
 
 # FastAPI app initialization
 app = FastAPI()
 
-class CommitMessageHandler:
+# Enable CORS (Adjust allowed origins for security)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to specific frontend origin if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+class CommitMessageHandler:
     def __init__(self, faiss_index_file="faiss_rules.index", rules_file="rules.txt"):
         # Initialize the OpenAI client and the Sentence Transformer model
         self.client = OpenAI(
@@ -81,7 +89,7 @@ class CommitMessageHandler:
         company_rules = self.retrieve_all_rules()
 
         if not company_rules:
-            return commit_message_example  # "No relevant rules found. Please define company guidelines first."
+            return commit_message_example  
 
         prompt = (
             "You are an AI assistant that reviews commit messages to ensure they follow company guidelines.\n"
@@ -100,9 +108,7 @@ class CommitMessageHandler:
 
 
 class CommitMessageGenerator:
-
-    def generate_commit_message(self,git_diff,instructions):
-
+    def generate_commit_message(self, git_diff, instructions):
         # Load the service account credentials
         credentials = service_account.Credentials.from_service_account_file(
             SERVICE_ACCOUNT_KEY_FILE,
@@ -164,15 +170,15 @@ async def generate_commit_message_endpoint(request: GitDiffRequest):
 
         # Set instruction based on message_type
         if message_type == "singleline":
-            instruction = "Given the following git diff,generate only a single line commit message, covering all the changes:"
+            instruction = "Given the following git diff, generate only a single-line commit message, covering all the changes:"
         elif message_type == "multiline":
-            instruction = "Given the following git diff,generate only a commit message as multiple simple few points, covering all the changes:"
+            instruction = "Given the following git diff, generate a commit message as multiple simple points, covering all the changes:"
         else:
             raise HTTPException(status_code=400, detail="Invalid message_type. It must be either 'singleline' or 'multiline'.")
 
         # Initialize CommitMessageGenerator and generate the commit message
         generator = CommitMessageGenerator()
-        commit_message = generator.generate_commit_message(diff,instruction)
+        commit_message = generator.generate_commit_message(diff, instruction)
         print(commit_message)
 
         # Initialize CommitMessageHandler and apply company rules
