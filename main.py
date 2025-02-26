@@ -10,7 +10,7 @@ from sentence_transformers import SentenceTransformer
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
-# Load environment variables
+
 load_dotenv('.env')
 LLAMA_URL = os.environ.get('LLAMA_URL')
 LLAMA_KEY = os.environ.get('LLAMA_KEY')
