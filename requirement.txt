@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
 python-dotenv
+
 openai
 faiss-cpu
 numpy
@@ -8,5 +9,6 @@ sentence-transformers
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
-pydantic
 requests
+pydantic
+
