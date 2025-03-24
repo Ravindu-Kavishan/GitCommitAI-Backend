@@ -1,5 +1,5 @@
 import os
-import faiss
+import faiss 
 import numpy as np
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer 
