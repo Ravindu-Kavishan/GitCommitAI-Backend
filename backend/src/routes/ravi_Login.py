@@ -1,23 +1,20 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Response
 from pydantic import BaseModel
 from src.config import db  # Assuming db is your MongoDB instance
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import JSONResponse
 from bson import ObjectId
 
 # Router Initialization
 router = APIRouter()
-
-# OAuth2 scheme for security
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Define the User Pydantic model
 class LoginData(BaseModel):
     username: str
     password: str
 
-# Endpoint to log in using username and password
+# Endpoint to log in and create a cookie
 @router.post("/login")
-async def login(data: LoginData):
+async def login(data: LoginData, response: Response):
     try:
         # Search for the user in the database
         user = await db.users.find_one({"username": data.username})
@@ -35,6 +32,15 @@ async def login(data: LoginData):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid username or password"
             )
+
+        # Set the cookie with the user ID
+        response.set_cookie(
+            key="user_id", 
+            value=str(user["_id"]), 
+            httponly=True,  # Prevents JavaScript access to the cookie
+            secure=True,    # Ensures the cookie is sent only over HTTPS
+            samesite="Strict"  # Prevents cross-site request forgery (CSRF)
+        )
 
         # Successful login response
         return {
