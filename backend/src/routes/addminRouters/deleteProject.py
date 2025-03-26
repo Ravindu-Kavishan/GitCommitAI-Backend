@@ -16,7 +16,8 @@ async def delete_project(data: ProjectDeleteRequest):
         result = await db.projects.delete_one({"project_name": data.project_name})
 
         if result.deleted_count == 0:
-            raise HTTPException(status_code=404, detail="Project not found.")
+            return JSONResponse(content={"message": "Project not found."}, status_code=404)
+
         
         return JSONResponse(content={"message": "Project deleted successfully."}, status_code=200)
 

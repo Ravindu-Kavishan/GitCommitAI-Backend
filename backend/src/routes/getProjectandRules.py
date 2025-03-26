@@ -83,7 +83,8 @@ async def get_user_projects(request: Request):
         user_email = request.cookies.get("email")
 
         if not user_email:
-            raise HTTPException(status_code=400, detail="User email not found in cookie.")
+            return JSONResponse(content={"message": "User email not found in cookie."}, status_code=400)
+        
 
         # Query the database to find matching projects
         projects = await db.projects.find({"users": user_email}).to_list(length=None)
@@ -95,7 +96,7 @@ async def get_user_projects(request: Request):
         ]
 
         if not result:
-            raise HTTPException(status_code=404, detail="No projects found for this user.")
+            return JSONResponse(content={"message": "No projects found for this user."}, status_code=404)
 
         return JSONResponse(content={"projects": result}, status_code=200)
 

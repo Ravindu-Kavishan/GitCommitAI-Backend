@@ -3,6 +3,7 @@ from src.functions.commit_explanation_handler import CommitExplanationHandler
 from pydantic import BaseModel
 from rich.console import Console
 from rich.markdown import Markdown
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -16,7 +17,8 @@ async def generate_commit_review(request: CommitRequest):
     try:
         explanation = bot.generate_commit_review(request.diff)
         if not explanation:
-            raise HTTPException(status_code=404, detail="Commit review not generated.")
+            return JSONResponse(content={"message": "Commit review not generated."}, status_code=404)
+
 
         return {"commit_review": explanation}
 

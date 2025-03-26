@@ -19,7 +19,7 @@ async def get_projects_and_rules(request: Request):
         ]
 
         if not result:
-            raise HTTPException(status_code=404, detail="No projects found for this user.")
+            return JSONResponse(content={"message": "Project not found."}, status_code=404)
 
         return JSONResponse(content={"projects": result}, status_code=200)
 

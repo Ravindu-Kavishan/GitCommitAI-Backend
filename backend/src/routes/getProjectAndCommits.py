@@ -22,10 +22,8 @@ async def get_user_projects(request: Request):
         projects = await db.commit_history.find({"user_id": user_id}).to_list(None)
 
         if not projects:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="No projects found for this user"
-            )
+            return JSONResponse(content={"message": "Project not found."}, status_code=404)
+        
 
         # Extract project names, commits, and git_diffs
         result = [

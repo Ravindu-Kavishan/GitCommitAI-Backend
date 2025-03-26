@@ -20,10 +20,10 @@ async def add_user(data: UserAddRequest):
         )
 
         if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Project not found.")
+            return JSONResponse(content={"message": "Project not found."}, status_code=404)
         
         if result.modified_count == 0:
-            raise HTTPException(status_code=400, detail="User already exists in the project.")
+            return JSONResponse(content={"message": "User already exists in the project."}, status_code=400)
         
         return JSONResponse(content={"message": "User added successfully."}, status_code=200)
 
