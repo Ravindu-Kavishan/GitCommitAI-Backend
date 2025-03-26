@@ -12,6 +12,7 @@ class CommitExplanationHandler:
         load_dotenv('.env')
         LLAMA_URL = os.getenv('LLAMA_URL')
         LLAMA_KEY = os.getenv('LLAMA_KEY')
+        
 
         if not LLAMA_URL or not LLAMA_KEY:
             raise ValueError("Environment variables LLAMA_URL or LLAMA_KEY are missing.")

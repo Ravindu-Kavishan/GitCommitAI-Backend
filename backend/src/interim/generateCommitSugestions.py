@@ -7,7 +7,7 @@ from src.models.commitModel import CommitMessageRequest
 router = APIRouter()
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-API_KEY = "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"
+API_KEY = "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"
 
 class ManualCommitHandler:
     def __init__(self, rules_file=None):

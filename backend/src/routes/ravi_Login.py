@@ -41,12 +41,16 @@ async def login(data: LoginData, response: Response):
             secure=True,    # Ensures the cookie is sent only over HTTPS
             samesite="Strict"  # Prevents cross-site request forgery (CSRF)
         )
+        admin = False  # Default to False
+        if "admin" in user and user["admin"]:
+            admin = True
 
         # Successful login response
         return {
             "message": "Login successful",
             "user_id": str(user["_id"]),
-            "username": user["username"]
+            "username": user["username"],
+            "admin":admin
         }
 
     except Exception as e:

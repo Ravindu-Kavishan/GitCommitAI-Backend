@@ -5,7 +5,7 @@ import json
 router = APIRouter()
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-API_KEY = "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"
+API_KEY = "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"
 
 @router.post("/generate-commit-message/")
 async def generate_commit_message(request: Request):
