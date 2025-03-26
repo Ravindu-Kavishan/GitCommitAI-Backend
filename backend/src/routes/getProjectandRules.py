@@ -1,69 +1,103 @@
-from fastapi import APIRouter, HTTPException, Request, status
-from src.config import db
-from fastapi.responses import JSONResponse
+# from fastapi import APIRouter, HTTPException, Request, status
+# from src.config import db
+# from fastapi.responses import JSONResponse
 
-# Router Initialization
+# # Router Initialization
+# router = APIRouter()
+
+# # Endpoint to fetch projects for the authenticated user
+# @router.get("/get_projects_and_rules")
+# async def get_user_projects(request: Request):
+#     # Extract `user_id` from the cookie
+#     user_id = request.cookies.get("user_id")
+
+#     if not user_id:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="User not authenticated"
+#         )
+
+#     try:
+#         # Database connection check
+#         if db is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                 detail="Database connection error"
+#             )
+
+#         # Retrieve all projects for the given `user_id`
+#         projects = await db.rules.find({"user_id": user_id}).to_list(None)
+
+#         if not projects:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="No projects found for this user"
+#             )
+
+#         # Extract project names, commits, and git_diffs
+#         result = []
+#         for project in projects:
+#             if "project_name" not in project:
+#                 continue  # Skip malformed data
+
+#             result.append({
+#                 "project_name": project["project_name"],
+#                 "rules": [rule for rule in project["rules"]],
+#             })
+
+#         if not result:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="No valid project data available"
+#             )
+
+#         return JSONResponse(content={"projects": result}, status_code=200)
+
+#     except HTTPException as http_err:
+#         raise http_err  # Re-raise known exceptions
+
+#     except ConnectionError:
+#         raise HTTPException(
+#             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+#             detail="Database service unavailable"
+#         )
+
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"An unexpected error occurred: {str(e)}"
+#         )
+
+
+
+from fastapi import HTTPException, APIRouter, Request
+from fastapi.responses import JSONResponse
+from src.config import db  
+
 router = APIRouter()
 
-# Endpoint to fetch projects for the authenticated user
 @router.get("/get_projects_and_rules")
 async def get_user_projects(request: Request):
-    # Extract `user_id` from the cookie
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not authenticated"
-        )
-
     try:
-        # Database connection check
-        if db is None:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Database connection error"
-            )
+        # Extract the email from the cookie
+        user_email = request.cookies.get("email")
 
-        # Retrieve all projects for the given `user_id`
-        projects = await db.rules.find({"user_id": user_id}).to_list(None)
+        if not user_email:
+            raise HTTPException(status_code=400, detail="User email not found in cookie.")
 
-        if not projects:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="No projects found for this user"
-            )
+        # Query the database to find matching projects
+        projects = await db.projects.find({"users": user_email}).to_list(length=None)
 
-        # Extract project names, commits, and git_diffs
-        result = []
-        for project in projects:
-            if "project_name" not in project:
-                continue  # Skip malformed data
-
-            result.append({
-                "project_name": project["project_name"],
-                "rules": [rule for rule in project["rules"]],
-            })
+        # Extract project names and rules
+        result = [
+            {"project_name": project["project_name"], "rules": project["rules"]}
+            for project in projects
+        ]
 
         if not result:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="No valid project data available"
-            )
+            raise HTTPException(status_code=404, detail="No projects found for this user.")
 
         return JSONResponse(content={"projects": result}, status_code=200)
 
-    except HTTPException as http_err:
-        raise http_err  # Re-raise known exceptions
-
-    except ConnectionError:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Database service unavailable"
-        )
-
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An unexpected error occurred: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail="An unexpected error occurred.")

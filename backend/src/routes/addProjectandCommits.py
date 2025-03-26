@@ -19,7 +19,7 @@ class Project(BaseModel):
     commits: list[Commit]  # A list of commits
 
 # Endpoint to add a project with commits to the database
-@router.post("/add_project")
+@router.post("/add_project_Commit")
 async def add_project(project: Project):
     try:
         # Convert the Pydantic model to a dictionary for insertion

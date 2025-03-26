@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
 from src.routes import generateCommitRoute, generateSuggestions, commitExplainRoute
-from src.interim import generateCommitMessage, generateCommitSugestions
 from src.routes import ravi_Login, getProjectAndCommits
 from src.routes import getProjectandRules
+from src.routes.addminRouters import addProjectAndRules,deleteProject,deleteRule,addRule
+from src.interim import generateCommitMessage, generateCommitSugestions
 
 app = FastAPI()
 
@@ -27,3 +28,7 @@ app.include_router(generateCommitSugestions.router)
 app.include_router(ravi_Login.router)
 app.include_router(getProjectAndCommits.router)
 app.include_router(getProjectandRules.router)
+app.include_router(addProjectAndRules.router)
+app.include_router(deleteProject.router)
+app.include_router(deleteRule.router)
+app.include_router(addRule.router)

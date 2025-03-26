@@ -35,8 +35,8 @@ async def login(data: LoginData, response: Response):
 
         # Set the cookie with the user ID
         response.set_cookie(
-            key="user_id", 
-            value=str(user["_id"]), 
+            key="email", 
+            value=str(user["email"]), 
             httponly=True,  # Prevents JavaScript access to the cookie
             secure=True,    # Ensures the cookie is sent only over HTTPS
             samesite="Strict"  # Prevents cross-site request forgery (CSRF)
