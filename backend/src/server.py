@@ -11,7 +11,11 @@ app = FastAPI()
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React frontend URL
+    allow_origins=[
+        "http://localhost:5173",  
+        "vscode-webview://1dj8rm3ciunnkl89kon2pclrqtfm8h2qsreshgji2hk5qacf87ie",
+        "vscode-webview://058nbu3v76j2nef8hhk9og6p4rjit5891q9ni88uh0hv6n14akts"
+    ],
     allow_credentials=True,                   # To handle cookies
     allow_methods=["*"],                      # Allow all HTTP methods
     allow_headers=["*"],                      # Allow all headers

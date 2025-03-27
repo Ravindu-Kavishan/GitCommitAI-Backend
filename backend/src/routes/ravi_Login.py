@@ -50,7 +50,8 @@ async def login(data: LoginData, response: Response):
             "message": "Login successful",
             "user_id": str(user["_id"]),
             "username": user["username"],
-            "admin":admin
+            "admin":admin,
+            "email":user["email"]
         }
 
     except Exception as e:

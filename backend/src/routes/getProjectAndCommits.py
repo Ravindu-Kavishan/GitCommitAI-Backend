@@ -1,26 +1,28 @@
-from fastapi import APIRouter, HTTPException, Request, status
-from src.config import db
+from fastapi import HTTPException, APIRouter, Request, status
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel  # Added for request body validation
+from src.config import db  
 
-# Router Initialization
 router = APIRouter()
 
-# Endpoint to fetch projects for the authenticated user
-@router.get("/get_projects_and_commits")
-async def get_user_projects(request: Request):
-    # Extract `user_id` from the cookie
-    user_id = request.cookies.get("user_id")
+# Define the request body model
+class EmailRequest(BaseModel):
+    email: str
 
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not authenticated"
-        )
-
+@router.post("/get_projects_and_commits")  # Changed to POST to accept body data
+async def get_user_projects(request_data: EmailRequest):
     try:
-        # Retrieve all projects for the given `user_id`
-        projects = await db.commit_history.find({"user_id": user_id}).to_list(None)
+        # Extract the email from the request body
+        email = request_data.email
 
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not authenticated"
+            )
+
+        # Retrieve all projects for the given `email`
+        projects = await db.commit_history.find({"email": email}).to_list(None)
         if not projects:
             return JSONResponse(content={"message": "Project not found."}, status_code=404)
         
