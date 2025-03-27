@@ -4,7 +4,7 @@ from src.config import db
 
 router = APIRouter()
 
-@router.get("/admin/get_projects_and_rules")
+@router.post("/admin/get_projects_and_rules")
 async def get_projects_and_rules(request: Request):
     try:
         # Extract the email from the cooki
