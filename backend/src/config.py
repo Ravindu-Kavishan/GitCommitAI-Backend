@@ -17,4 +17,4 @@ DATABASE_NAME = "commit_DB"
 print(f"DATABASE_NAME: {DATABASE_NAME} (Type: {type(DATABASE_NAME)})")
 
 client = AsyncIOMotorClient(MONGO_URI)
-db = client[DATABASE_NAME]  # Failing line
+db = client[DATABASE_NAME]  
