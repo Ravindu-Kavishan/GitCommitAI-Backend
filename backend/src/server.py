@@ -6,6 +6,9 @@ from src.routes import getProjectandRules
 from src.routes.addminRouters import addProjectAndRules,deleteProject,deleteRule,addRule,getProjectsandUsers,getProjectsAndRules,addUser,deleteUser
 from src.interim import generateCommitMessage, generateCommitSugestions
 
+from backend.src.routes import userRoute
+from backend.src.routes import authRoute
+
 app = FastAPI()
 
 # CORS Configuration
@@ -40,3 +43,6 @@ app.include_router(getProjectsandUsers.router)
 app.include_router(getProjectsAndRules.router)
 app.include_router(addUser.router)
 app.include_router(deleteUser.router)
+
+app.include_router(userRoute.router)
+app.include_router(authRoute.router)
