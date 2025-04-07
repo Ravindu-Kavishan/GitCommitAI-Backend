@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from src.functions.commit_explanation_handler import CommitExplanationHandler
+from backend.src.functions.commit_explanation_handler import CommitExplanationHandler
 from pydantic import BaseModel
 from rich.console import Console
 from rich.markdown import Markdown

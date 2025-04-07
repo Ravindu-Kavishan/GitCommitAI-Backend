@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Response
 from pydantic import BaseModel
-from src.config import db  # Assuming db is your MongoDB instance
+from backend.src.config import db  # Assuming db is your MongoDB instance
 from fastapi.responses import JSONResponse
 from bson import ObjectId
 

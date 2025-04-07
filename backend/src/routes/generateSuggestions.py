@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException,APIRouter
 from pydantic import BaseModel
-from src.functions.manual_commit_handler import ManualCommitHandler
-from src.models.commitModel import CommitMessageRequest
+from backend.src.functions.manual_commit_handler import ManualCommitHandler
+from backend.src.models.commitModel import CommitMessageRequest
 
 router = APIRouter()
 

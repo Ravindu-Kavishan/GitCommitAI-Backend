@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Request
 import requests
 import json
 import os
-from src.models.commitModel import CommitMessageRequest
+from backend.src.models.commitModel import CommitMessageRequest
 
 router = APIRouter()
 

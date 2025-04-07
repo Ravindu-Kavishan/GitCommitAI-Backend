@@ -1,7 +1,7 @@
 from fastapi import HTTPException, APIRouter, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel  # Added for request body validation
-from src.config import db  
+from backend.src.config import db  
 
 router = APIRouter()
 

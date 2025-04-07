@@ -1,6 +1,6 @@
 from fastapi import HTTPException, APIRouter
 from pydantic import BaseModel
-from src.config import db  # Assuming db is your database instance
+from backend.src.config import db  # Assuming db is your database instance
 from fastapi.responses import JSONResponse
 
 # FastAPI router initialization

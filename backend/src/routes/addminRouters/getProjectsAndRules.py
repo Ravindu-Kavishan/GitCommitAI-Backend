@@ -1,6 +1,6 @@
 from fastapi import HTTPException, APIRouter, Request
 from fastapi.responses import JSONResponse
-from src.config import db  
+from backend.src.config import db  
 
 router = APIRouter()
 
