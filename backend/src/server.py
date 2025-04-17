@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
-from backend.src.routes import generateCommitRoute, generateSuggestions, commitExplainRoute,ravi_Login, getProjectAndCommits,getProjectandRules,forgetPasword
-from backend.src.routes.addminRouters import addProjectAndRules,deleteProject,deleteRule,addRule,getProjectsandUsers,getProjectsAndRules,addUser,deleteUser
+from backend.src.routes import generateCommitRoute, generateSuggestions, commitExplainRoute,ravi_Login, getProjectAndCommits,getProjectandRules,forgetPasword,getProjects
+from backend.src.routes.addminRouters import addProject,deleteProject,deleteRule,addRule,getProjectsandUsers,getProjectsAndRules,addUser,deleteUser
 from backend.src.interim import generateCommitMessage, generateCommitSugestions
 
 from backend.src.routes import userRoute
@@ -33,7 +33,7 @@ app.include_router(generateCommitSugestions.router)
 app.include_router(ravi_Login.router)
 app.include_router(getProjectAndCommits.router)
 app.include_router(getProjectandRules.router)
-app.include_router(addProjectAndRules.router)
+app.include_router(addProject.router)
 app.include_router(deleteProject.router)
 app.include_router(deleteRule.router)
 app.include_router(addRule.router)
@@ -41,8 +41,9 @@ app.include_router(getProjectsandUsers.router)
 app.include_router(getProjectsAndRules.router)
 app.include_router(addUser.router)
 app.include_router(deleteUser.router)
+app.include_router(getProjects.router)
 
-app.include_router(userRoute.router)
+# app.include_router(userRoute.router)
 app.include_router(authRoute.router)
 
 app.include_router(forgetPasword.router)
