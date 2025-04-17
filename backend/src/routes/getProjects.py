@@ -1,13 +1,25 @@
 from fastapi import HTTPException, APIRouter, Request
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel  # Added for request body validation
 from backend.src.config import db  
 
 router = APIRouter()
 
-@router.post("/get_projects")
-async def get_projects(request: Request):
+# Define the request body model
+class EmailRequest(BaseModel):
+    email: str
+
+@router.post("/get_projects")  
+async def get_projects(request_data: EmailRequest):
     try:
-        projects = await db.projects.find().to_list(length=None)
+        # Extract the email from the request body
+        user_email = request_data.email
+
+        if not user_email:
+            return JSONResponse(content={"message": "User email not provided."}, status_code=400)
+        
+        # Query the database to find matching projects
+        projects = await db.projects.find({"users": user_email}).to_list(length=None)
 
         # Extract project names and rules
         result = [
@@ -15,8 +27,9 @@ async def get_projects(request: Request):
             for project in projects
         ]
 
+
         if not result:
-            return JSONResponse(content={"message": "Project not found."}, status_code=404)
+            return JSONResponse(content={"message": "No projects found for this user."}, status_code=404)
 
         return JSONResponse(content={"projects": result}, status_code=200)
 
