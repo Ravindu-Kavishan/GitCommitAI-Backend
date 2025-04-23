@@ -1,8 +1,8 @@
 import os
-import faiss
+import faiss 
 import numpy as np
 from openai import OpenAI
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer 
 
 
 class CommitMessageHandler:
@@ -82,3 +82,7 @@ class CommitMessageHandler:
             messages=[{"role": "user", "content": prompt}]
         )
         return completion.choices[0].message.content.strip()
+
+
+
+

@@ -1,0 +1,10 @@
+1. Use imperative mood (e.g., "Fix bug" instead of "Fixed bug" or "Fixes bug").
+2. Keep the subject line under 50 characters.
+3. Capitalize the first word of the commit message.
+4. Do not end the subject line with a period.
+5. Use present tense (e.g., "Update README" instead of "Updated README").
+6. Avoid vague words like "fix" or "change"—be specific (e.g., "Fix login session timeout issue").
+7. If the commit introduces a breaking change, mention it clearly in the body.
+8. Keep each line in the body under 72 characters.
+9. If it's a small change, a subject-only commit message is fine.
+10. If the given commit is single line, keep it single line

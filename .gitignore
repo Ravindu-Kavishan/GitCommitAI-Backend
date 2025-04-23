@@ -8,3 +8,6 @@ node_modules/
 # Ignore Python virtual environments
 venv/
 __pycache__/
+
+# Ignore Google Cloud Service Account Credentials
+backend/composite-area-451712-u7-d2eef9c0ce4c.json
