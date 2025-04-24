@@ -3,11 +3,14 @@ import faiss
 import numpy as np
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer 
+from dotenv import load_dotenv
+import requests 
+load_dotenv()
 
 
 class CommitMessageHandler:
 
-    def __init__(self, faiss_index_file="faiss_rules.index", rules_file="rules.txt"):
+    def __init__(self, faiss_index_file="faiss_rules.index"):
         # Initialize the OpenAI client and the Sentence Transformer model
         self.client = OpenAI(
             base_url=os.getenv('LLAMA_URL'),
@@ -15,30 +18,47 @@ class CommitMessageHandler:
         )
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
         self.FAISS_INDEX_FILE = faiss_index_file
-        self.RULES_FILE = rules_file
 
-    def get_embedding(self, text):
-        # Generate the embedding
-        embedding = self.model.encode(text)
-        return np.array(embedding).astype('float32')
+    def get_rules(self, project_name):
+        """
+        Fetch rules dynamically for the given project name by making an API call.
+        """
+        try:
+            #request to the backend API
+            response = requests.post(
+                "http://localhost:8000/get_rules",
+                json={"project_name": project_name}
+            )
+            response.raise_for_status()  
 
+            
+            return response.json().get("rules", [])
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching rules for project '{project_name}': {e}")
+            return []
+        
+    def get_embedding(self, texts):
+        """
+        Generate embeddings for a list of texts using the SentenceTransformer model.
+        :param texts: List of strings to generate embeddings for.
+        :return: NumPy array of embeddings.
+        """
+        if isinstance(texts, str):
+            texts = [texts]  # Convert single string to a list
+        return np.array(self.model.encode(texts))
+    
     def initialize_faiss(self):
         if os.path.exists(self.FAISS_INDEX_FILE):
             return faiss.read_index(self.FAISS_INDEX_FILE)
         else:
             return faiss.IndexFlatL2(384)
 
-    def store_company_rules(self):
-        if not os.path.exists(self.RULES_FILE):
-            print("rules.txt does not exist.")
-            return
-
-        # Load all rules
-        with open(self.RULES_FILE, "r") as f:
-            rules = [line.strip() for line in f.readlines() if line.strip()]
+    def store_company_rules(self, project_name):
+        # Fetch rules dynamically using get_rules
+        rules = self.get_rules(project_name)
 
         if not rules:
-            print("rules.txt is empty!")
+            print(f"No rules found for project: {project_name}")
             return
 
         embeddings = self.get_embedding(rules)
@@ -48,26 +68,40 @@ class CommitMessageHandler:
 
         # Save FAISS index
         faiss.write_index(index, self.FAISS_INDEX_FILE)
-        print(f"FAISS index created with {len(rules)} rules.")
+        print(f"FAISS index created with {len(rules)} rules for project: {project_name}.")
 
-    def retrieve_all_rules(self):
-        index = self.initialize_faiss()
+    def retrieve_best_rules(self, commit_message, project_name, top_k=5):
+        # Fetch rules dynamically using get_rules
+        rules = self.get_rules(project_name)
 
-        if not os.path.exists(self.RULES_FILE) or index.ntotal == 0:
+        if not rules:
+            print(f"No rules found for project: {project_name}")
             return []
 
-        with open(self.RULES_FILE, "r") as f:
-            rules = [line.strip() for line in f.readlines()]
+        # Load FAISS index
+        index = self.initialize_faiss()
 
-        return rules
+        if index.ntotal == 0:
+            print("FAISS index is empty!")
+            return []
 
-    def generate_commit_message(self, commit_message_example):
-        self.store_company_rules()
-        company_rules = self.retrieve_all_rules()
+        # Embed the commit message
+        query_vector = self.get_embedding(commit_message).reshape(1, -1)
+
+        
+        distances, indices = index.search(query_vector, top_k)
+
+        
+        best_rules = [rules[i] for i in indices[0] if i < len(rules)]
+        #print(best_rules)
+        return best_rules
+
+    def generate_commit_message(self, commit_message_example, project_name):
+        self.store_company_rules(project_name)
+        company_rules = self.retrieve_best_rules(commit_message_example, project_name)
 
         if not company_rules:
-            return commit_message_example  # "No relevant rules found. Please define company guidelines first."
-
+            return commit_message_example  
         prompt = (
             "You are an AI assistant that reviews commit messages to ensure they follow company guidelines.\n"
             "Below are the company rules that must be strictly followed:\n\n"
@@ -82,7 +116,3 @@ class CommitMessageHandler:
             messages=[{"role": "user", "content": prompt}]
         )
         return completion.choices[0].message.content.strip()
-
-
-
-

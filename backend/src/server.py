@@ -3,9 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
 from backend.src.routes import generateCommitRoute, generateSuggestions, commitExplainRoute,ravi_Login, getProjectAndCommits,getProjectandRules,forgetPasword
 from backend.src.routes.addminRouters import addProjectAndRules,deleteProject,deleteRule,addRule,getProjectsandUsers,getProjectsAndRules,addUser,deleteUser
 from backend.src.interim import generateCommitMessage, generateCommitSugestions
-
 from backend.src.routes import userRoute
 from backend.src.routes import authRoute
+from backend.src.routes import getRules
+
+
+
 
 app = FastAPI()
 
@@ -41,7 +44,7 @@ app.include_router(getProjectsandUsers.router)
 app.include_router(getProjectsAndRules.router)
 app.include_router(addUser.router)
 app.include_router(deleteUser.router)
-
+app.include_router(getRules.router)
 app.include_router(userRoute.router)
 app.include_router(authRoute.router)
 
