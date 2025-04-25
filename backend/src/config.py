@@ -5,8 +5,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 # Load environment variables
 load_dotenv()
 
-# MONGO_URI = os.getenv("MONGO_URI")
-MONGO_URI="mongodb://localhost:27017"
+MONGO_URI = os.getenv("MONGO_URI")
+# MONGO_URI="mongodb://localhost:27017"
 #DATABASE_NAME = os.getenv("DATABASE_NAME")
 DATABASE_NAME = "commit_DB"
 # DATABASE_NAME = os.getenv("DATABASE_NAME", "commit_DB")

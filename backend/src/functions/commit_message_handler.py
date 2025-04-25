@@ -53,9 +53,8 @@ class CommitMessageHandler:
         else:
             return faiss.IndexFlatL2(384)
 
-    def store_company_rules(self, project_name):
+    def store_company_rules(self, rules,project_name):
         # Fetch rules dynamically using get_rules
-        rules = self.get_rules(project_name)
 
         if not rules:
             print(f"No rules found for project: {project_name}")
@@ -70,9 +69,7 @@ class CommitMessageHandler:
         faiss.write_index(index, self.FAISS_INDEX_FILE)
         print(f"FAISS index created with {len(rules)} rules for project: {project_name}.")
 
-    def retrieve_best_rules(self, commit_message, project_name, top_k=5):
-        # Fetch rules dynamically using get_rules
-        rules = self.get_rules(project_name)
+    def retrieve_best_rules(self, commit_message, rules,project_name, top_k=5):
 
         if not rules:
             print(f"No rules found for project: {project_name}")
@@ -86,19 +83,20 @@ class CommitMessageHandler:
             return []
 
         # Embed the commit message
-        query_vector = self.get_embedding(commit_message).reshape(1, -1)
+        query_vector = self.get_embedding(commit_message['commit_message']).reshape(1, -1)
 
         
         distances, indices = index.search(query_vector, top_k)
 
         
         best_rules = [rules[i] for i in indices[0] if i < len(rules)]
-        #print(best_rules)
+        print(best_rules)
         return best_rules
 
-    def generate_commit_message(self, commit_message_example, project_name):
-        self.store_company_rules(project_name)
-        company_rules = self.retrieve_best_rules(commit_message_example, project_name)
+    def generate_commit_message(self, commit_message_example, rules,project_name):
+        self.store_company_rules(rules,project_name)
+        company_rules = self.retrieve_best_rules(commit_message_example,rules ,project_name)
+        print(company_rules)
 
         if not company_rules:
             return commit_message_example  

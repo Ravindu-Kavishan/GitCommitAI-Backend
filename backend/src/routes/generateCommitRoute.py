@@ -23,7 +23,7 @@ async def generate_commit_message_endpoint(request: GitDiffRequest):
 
         # Initialize CommitMessageGenerator and generate the commit message
         generator = CommitMessageGenerator()
-        commit_message = generator.generate_commit_message(diff, instruction)
+        commit_message = generator.generate_commit_message_with_vertexai(diff, instruction)
         print(commit_message)
 
         # Initialize CommitMessageHandler and apply company rules
