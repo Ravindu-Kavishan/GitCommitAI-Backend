@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from backend.src.config import db  # Assuming db is your MongoDB instance
 from fastapi.responses import JSONResponse
 from bson import ObjectId
+import bcrypt
+
 
 # Router Initialization
 router = APIRouter()
@@ -26,12 +28,12 @@ async def login(data: LoginData, response: Response):
                 detail="User not found"
             )
 
-        # Password verification (assuming passwords are stored in plain text)
-        if user["password"] != data.password:
+        if not bcrypt.checkpw(data.password.encode('utf-8'), user["password"].encode('utf-8')):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid username or password"
             )
+
 
         # Set the cookie with the user ID
         response.set_cookie(

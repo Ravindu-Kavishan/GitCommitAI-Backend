@@ -1,11 +1,8 @@
 from fastapi import APIRouter, HTTPException, Request
-# import requests
-# import json
 from backend.src.functions.commit_message_generator import CommitMessageGenerator
 from backend.src.functions.commit_message_handler import CommitMessageHandler
 from backend.src.models.commitModel import GitDiffRequest
 from backend.src.config import db 
-
 
 
 router = APIRouter()

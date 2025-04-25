@@ -18,7 +18,7 @@ class CommitMessageGenerator:
         # Create an authorized session
         authed_session = AuthorizedSession(credentials)
 
-        # Prepare the request payload
+        # Prepare the request payloadi
         payload = {
             "instances": [
                 {
@@ -77,7 +77,6 @@ class CommitMessageGenerator:
                 "messages": [{"role": "user", "content": prompt}]
             })
         )
-
         if response.status_code != 200:
             raise Exception(status_code=response.status_code, detail="Failed to generate commit message.")
 
