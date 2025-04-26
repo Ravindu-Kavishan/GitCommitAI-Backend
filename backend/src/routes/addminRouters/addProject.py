@@ -17,17 +17,27 @@ async def add_project(data: ProjectAddRequest):
         # Check if a project with the same name already exists
         existing_project = await db.projects.find_one({"project_name": data.project_name})
         if existing_project:
-            return JSONResponse(content={"message": "Project with this name already exists.."}, status_code=400)
-        
-        
-        # Insert the new project if no duplicate is found
+            return JSONResponse(content={"message": "Project with this name already exists."}, status_code=400)
+
+        # Check whether all users (emails) exist in the users collection
+        existing_users = await db.users.find({"email": {"$in": data.users}}).to_list(length=None)
+        existing_emails = {user["email"] for user in existing_users}
+
+        missing_users = [email for email in data.users if email not in existing_emails]
+        if missing_users:
+            return JSONResponse(
+                content={"message": "Some users not found.", "missing_users": missing_users},
+                status_code=404
+            )
+
+        # Insert the new project if no duplicate and users exist
         new_project = {
             "project_name": data.project_name,
             "rules": data.rules,
             "users": data.users
         }
         await db.projects.insert_one(new_project)
-        
+
         return JSONResponse(content={"message": "Project added successfully."}, status_code=201)
 
     except Exception as e:
