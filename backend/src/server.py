@@ -6,11 +6,31 @@ from backend.src.interim import generateCommitMessage, generateCommitSugestions
 from backend.src.routes import userRoute
 from backend.src.routes import authRoute
 from backend.src.routes import getRules
-
+from backend.src.routes import notifyAgent
+import asyncio
 
 
 
 app = FastAPI()
+
+monitor_task = None
+
+@app.on_event("startup")
+async def startup_event():
+    """Start all necessary background tasks"""
+    global monitor_task
+    monitor_task = await notifyAgent.start_monitor()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup when the application shuts down"""
+    global monitor_task
+    if monitor_task:
+        monitor_task.cancel()
+        try:
+            await monitor_task
+        except asyncio.CancelledError:
+            pass
 
 # CORS Configuration
 app.add_middleware(
@@ -54,5 +74,6 @@ app.include_router(authRoute.router)
 app.include_router(forgetPasword.router)
 
 app.include_router(nextWord.router)
+
 
 
