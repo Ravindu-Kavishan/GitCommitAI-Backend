@@ -10,6 +10,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 from dotenv import load_dotenv
+import smtplib
+from email.message import EmailMessage
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
@@ -79,6 +81,49 @@ class SendSMSTool(BaseTool):
         except Exception as e:
             return f"SMS sending failed: {str(e)}"
 
+class SendEmailTool(BaseTool):
+    name: ClassVar[str] = "send_email"
+    description: ClassVar[str] = "Sends an email to a user. Input should be a JSON string with 'email' and 'message' fields."
+ 
+    def _run(self, tool_input: str) -> str:
+        raise NotImplementedError("Use async version")
+    
+    async def _arun(self, tool_input: str) -> str:
+        try:
+            # Parse the input JSON string
+            params = json.loads(tool_input)
+            email = params['email']
+            message = params['message']
+        
+            def send_email():
+                sender_email = "tenurastudy@gmail.com"  # Replace with your email
+                sender_password = "awgv cnzj hzsz laos"  # Use App Password if using Gmail
+
+                msg = EmailMessage()
+                msg.set_content(message)
+                msg["Subject"] = "Project update"
+                msg["From"] = sender_email
+                msg["To"] = email
+
+                try:
+                    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                        server.login(sender_email, sender_password)
+                        server.send_message(msg)
+                    return f"Mail sent to {email}"
+                except Exception as e:
+                    print(f"Error sending email: {e}")
+                    return "error sending the email"
+                
+            result = await asyncio.to_thread(send_email)
+            return result
+
+        except json.JSONDecodeError:
+            return "Error: Input must be a valid JSON string with 'email' and 'message' fields"
+        except KeyError:
+            return "Error: JSON must contain both 'email' and 'message' fields"
+        except Exception as e:
+            return f"email sending failed: {str(e)}"
+            
 
 def run_async(coro):
     """Run async code in a way that's safe for both sync and async contexts"""
@@ -101,7 +146,7 @@ class GetUserDetailsTool(BaseTool):
         try:
             user = await users_collection.find_one({"email": email.strip()})
             if user:
-                return f"User details: Name: {user['username']}, Phone: {user['contact']}"
+                return f"User details: Name: {user['username']}, Phone: {user['contact']}, Email: {email}"
             return "User not found."
         except Exception as e:
             return str(e)
@@ -130,7 +175,7 @@ class GetProjectNameTool(BaseTool):
 
 # Create the custom tools
 custom_tools = [
-    SendSMSTool(),
+    SendEmailTool(),
     GetUserDetailsTool(),
     GetProjectNameTool(),
 ]
@@ -169,12 +214,16 @@ async def monitor_changes():
 
                         prompt = f"""
                         Follow these steps:
-                        1. For a given project multiple emails can be updated at once. Then you should send an SMS to each email in the provided list.
+                        1. For a given project multiple emails can be updated at once. Then you should send an email to each email in the provided list.
                         2. Get project name: use the ID {project_id} directly (not as JSON)                                
                         3. Get user details: use the emails in the list {emails}
-                        4. If you doesn't have either user name, phone number or project name, stop execution
-                        5. Once you have both the user's phone number and project name, send an SMS using this format: 
-                        {{"number": "<phone_number_from_step_1>", "message": "<Interactive greeting> <user_name_from_step_1> you have been added to the project <project_name_from_step_2>"}}
+                        4. If you doesn't have either user name, email or project name, stop execution
+                        5. Once you have both the user's email and project name, send an email using this format: 
+                        "email": "<email_from_step_1>"
+                        "message": 
+                        <A suitable greeting> <user_name_from_step_1> \n
+                        you have been added to the project <project_name_from_step_2> \n
+                        <A suitable closing motivating them to work on the project>
                         """
                         print(f"Running agent for emails: {emails}")
                         result = await agent_with_custom_tools.arun(prompt)
