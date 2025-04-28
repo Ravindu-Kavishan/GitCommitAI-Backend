@@ -34,6 +34,9 @@ async def login(request: Request, username: str = Form(None), password: str = Fo
 
     # ADMIN LOGIN BLOCK
     if username == ADMIN_USERNAME:
+        print(ADMIN_USERNAME)
+        print(ADMIN_HASHED_PASSWORD)
+        print(pwd_context.hash(password))
         if not ADMIN_HASHED_PASSWORD:
             return JSONResponse(status_code=500, content={"detail": "Admin password not configured"})
 
@@ -60,5 +63,6 @@ async def login(request: Request, username: str = Form(None), password: str = Fo
         "message": "Login successful",
         "access_token": token,
         "token_type": "bearer",
-        "role": "user"
+        "role": "user",
+        "email":user["email"]
     }
