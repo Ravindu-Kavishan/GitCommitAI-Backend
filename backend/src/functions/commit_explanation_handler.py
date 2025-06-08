@@ -32,7 +32,7 @@ class CommitExplanationHandler:
 
         try:
             completion = self.client.chat.completions.create(
-                model="meta-llama/Llama-3-70b-instruct",
+                model="meta-llama/llama-3.3-70b-instruct",
                 messages=[{"role": "user", "content": prompt}]
             )
             return completion.choices[0].message.content.strip()

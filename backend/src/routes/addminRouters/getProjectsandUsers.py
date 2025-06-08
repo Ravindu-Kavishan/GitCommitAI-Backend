@@ -11,10 +11,12 @@ async def get_projects_and_users(request: Request):
 
         # Query the database to find matching projects
         projects = await db.projects.find().to_list(length=None)
-
         # Extract project names and rules
         result = [
-            {"project_name": project["project_name"], "users": project["users"]}
+            {
+                "project_name": project.get("project_name", "Unnamed Project"),
+                "rules": project.get("users", [])
+            }
             for project in projects
         ]
 

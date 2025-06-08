@@ -11,6 +11,3 @@ salt = bcrypt.gensalt()
 
 # Step 4: Hash the password
 hashed = bcrypt.hashpw(password_bytes, salt)
-
-# Step 5: Print hashed password
-print("Hashed password:", hashed.decode())

@@ -2,16 +2,25 @@ from fastapi import APIRouter, HTTPException, Request
 import requests
 import json
 import os
+from dotenv import load_dotenv
 from backend.src.models.commitModel import CommitMessageRequest
+
+# Load environment variables
+load_dotenv()
 
 router = APIRouter()
 
-OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-API_KEY = "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"
+# Load API key and endpoint from .env
+LLAMA_KEY = os.getenv("LLAMA_KEY")
+OPENROUTER_API_URL = os.getenv("OPENROUTER_API_URL")
+
+# Fail fast if missing configuration
+if not LLAMA_KEY or not OPENROUTER_API_URL:
+    raise RuntimeError("Missing LLAMA_KEY or OPENROUTER_API_URL in environment variables.")
 
 class ManualCommitHandler:
     def __init__(self, rules_file=None):
-        self.RULES_FILE = rules_file or os.path.join("src", "interim", "rules.txt")
+        self.RULES_FILE = rules_file or os.path.abspath(os.path.join("backend", "src", "interim", "rules.txt"))
 
     def retrieve_all_rules(self):
         try:
@@ -42,10 +51,10 @@ class ManualCommitHandler:
         response = requests.post(
             url=OPENROUTER_API_URL,
             headers={
-                "Authorization": f"Bearer {API_KEY}",
+                "Authorization": f"Bearer {LLAMA_KEY}",
                 "Content-Type": "application/json",
-                "HTTP-Referer": "<YOUR_SITE_URL>",
-                "X-Title": "<YOUR_SITE_NAME>",
+                "HTTP-Referer": "http://localhost:8000",  # Replace with your actual domain if deployed
+                "X-Title": "Commit Message Reviewer"
             },
             data=json.dumps({
                 "model": "meta-llama/llama-3.3-70b-instruct",

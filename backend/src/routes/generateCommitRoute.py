@@ -24,12 +24,10 @@ async def generate_commit_message_endpoint(request: GitDiffRequest):
         # Initialize CommitMessageGenerator and generate the commit message
         generator = CommitMessageGenerator()
         commit_message = generator.generate_commit_message_with_vertexai(diff, instruction)
-        print(commit_message)
 
         # Initialize CommitMessageHandler and apply company rules
         commit_handler = CommitMessageHandler()
         final_commit_message = commit_handler.generate_commit_message(commit_message)
-        print(final_commit_message)
 
         # Return the final commit message as a JSON response
         return {"commit_message": final_commit_message}

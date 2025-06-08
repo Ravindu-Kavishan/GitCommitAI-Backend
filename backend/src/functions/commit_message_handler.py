@@ -34,7 +34,6 @@ class CommitMessageHandler:
             
             return response.json().get("rules", [])
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching rules for project '{project_name}': {e}")
             return []
         
     def get_embedding(self, texts):

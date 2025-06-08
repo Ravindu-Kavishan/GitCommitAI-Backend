@@ -59,7 +59,6 @@ class CommitMessageGenerator:
     def generate_commit_message(self, git_diff, instructions):
 
         prompt = f"{instructions}\n{git_diff}"
-        print(prompt)
 
         OPENROUTER_API_URL=os.getenv('OPENROUTER_API_URL')
         API_KEY=os.getenv('LLAMA_KEY')
@@ -73,7 +72,7 @@ class CommitMessageGenerator:
                 "X-Title": "<YOUR_SITE_NAME>",
             },
             data=json.dumps({
-                "model": "qwen/qwen-2.5-coder-32b-instruct:free",
+                "model": "meta-llama/llama-3.3-70b-instruct",
                 "messages": [{"role": "user", "content": prompt}]
             })
         )

@@ -19,7 +19,6 @@ async def create_user(user: User):
     user_dict = user.dict(exclude={"id"})
     user_dict["password"] = pwd_context.hash(user_dict["password"])  # Hash password here
     result = await db.users.insert_one(user_dict)
-    print("Hashed password:", user_dict["password"])
 
     return str(result.inserted_id)
 

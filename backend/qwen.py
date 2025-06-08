@@ -39,7 +39,7 @@ response = requests.post(
     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
   },
   data=json.dumps({
-    "model": "qwen/qwen-2.5-coder-32b-instruct:free",
+    "model": "meta-llama/llama-3.3-70b-instruct",
     "messages": [
       {
         "role": "user",
