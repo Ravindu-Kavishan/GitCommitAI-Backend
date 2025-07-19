@@ -19,7 +19,7 @@ async def generate_commit_review(request: CommitRequest):
         if not explanation:
             return JSONResponse(content={"message": "Commit review not generated."}, status_code=404)
 
-
+        print(explanation)
         return {"commit_review": explanation}
 
     except Exception as e:
