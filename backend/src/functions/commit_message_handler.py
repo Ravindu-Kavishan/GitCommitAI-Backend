@@ -203,6 +203,7 @@ class CommitMessageHandler:
             "Rewrite the following commit message to fully comply with these rules. "
             "Stay within the context of the commit message and do not assume any content that is not in the commit message.\n"
             "Respond with only the corrected commit message, nothing else:\n\n"
+            "remove the double cotation marks and send the answer"
             f"{commit_message_example}"
         )
 
@@ -222,7 +223,7 @@ class CommitMessageHandler:
         
         print("finel commit message:", final_message)
         # 🔁 Replace double quotes with single quotes
-        final_message = final_message.replace("'", '"')
+        final_message = final_message.replace('"', '').replace("'", '')
 
         print("Corrected commit message:", final_message)
         return final_message

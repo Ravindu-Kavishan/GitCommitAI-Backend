@@ -8,3 +8,4 @@ class GitDiffRequest(BaseModel):
 # Pydantic model to define request structure
 class CommitMessageRequest(BaseModel):
     commit_message: str
+    project_name:str
