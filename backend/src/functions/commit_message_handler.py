@@ -199,11 +199,11 @@ class CommitMessageHandler:
         prompt = (
             "You are an AI assistant that reviews commit messages to ensure they follow company guidelines.\n"
             "Below are the company rules that must be strictly followed:\n\n"
+            "- DO NOT use any type of quotation marks (no double quotes, single quotes, backticks, or any symbols like \", ', `)\n"
             f"{chr(10).join(company_rules)}\n\n"
             "Rewrite the following commit message to fully comply with these rules. "
             "Stay within the context of the commit message and do not assume any content that is not in the commit message.\n"
             "Respond with only the corrected commit message, nothing else:\n\n"
-            "remove the double cotation marks and send the answer"
             f"{commit_message_example}"
         )
 
